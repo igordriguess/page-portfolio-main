@@ -116,11 +116,11 @@ const pt = {
     copyFailed: "Não foi possível copiar",
   },
   footer: {
-    tagline: "Desenvolvedor apaixonado por arquitetura cloud.",
+    tagline: "Arquiteto Cloud apaixonado por tecnologia e desenvolvimento.",
     navigation: "Navegação",
     contact: "Contato",
     email: "E-mail",
-    rights: "Todos os direitos reservados.",
+    rights: "| Todos os direitos reservados.",
   },
 };
 
@@ -242,11 +242,11 @@ const en: Dictionary = {
     copyFailed: "Could not copy",
   },
   footer: {
-    tagline: "Developer with a passion for cloud architecture.",
+    tagline: "Cloud Architect passionate about technology and development.",
     navigation: "Navigation",
     contact: "Contact",
     email: "E-mail",
-    rights: "All rights reserved.",
+    rights: "| All rights reserved.",
   },
 };
 

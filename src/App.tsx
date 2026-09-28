@@ -73,11 +73,11 @@ const expertise = [
 ];
 
 const companies = [
-  "CCM Soluções em Tecnologia",
-  "Statum Tecnologia",
-  "Senior Sistemas",
-  "Pedra Agroindustrial",
-  "SMARAPD Informática",
+  "CCM Soluções em Tecnologia | Ribeirão Preto - SP, Brasil",
+  "Statum Tecnologia | Ribeirão Preto - SP, Brasil",
+  "Senior Sistemas | Blumenau - SC, Brasil",
+  "Pedra Agroindustrial | Serrana - SP, Brasil",
+  "SMARAPD Informática | Ribeirão Preto - SP, Brasil",
 ];
 
 const CEFR_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
@@ -213,7 +213,7 @@ function App() {
         <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-4 px-5 md:px-8">
           <a href="#inicio" onClick={() => setMenuOpen(false)} className="flex shrink-0 items-center gap-3 font-semibold tracking-tight" aria-label={t.nav.home}>
             <span className="grid h-9 w-9 place-items-center rounded-full bg-[#c9ff59] font-mono text-sm font-bold text-[#102725]">IR</span>
-            <span className="hidden sm:block">Igor Rodrigues</span>
+            <span className="hidden sm:block">Igor Rodrigues |</span>
           </a>
           <nav className="hidden items-center gap-6 text-sm lg:flex xl:gap-8" aria-label={t.nav.mainLabel}>
             {navLinks.map(([label, href]) => (
@@ -501,14 +501,8 @@ function App() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 pt-8 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
-            <p>© {new Date().getFullYear()} Igor Rodrigues. {t.footer.rights}</p>
-            <button type="button" onClick={scrollToTop} className="group inline-flex w-fit items-center gap-2 font-mono uppercase tracking-[0.14em] transition hover:text-white">
-              {t.nav.backToTop}
-              <span className="grid h-7 w-7 place-items-center rounded-full border border-white/20 transition group-hover:border-[#c9ff59] group-hover:text-[#c9ff59]">
-                <Icon name="arrowUp" className="h-3.5 w-3.5" />
-              </span>
-            </button>
+          <div className="pt-8 text-xs text-white/40">
+            <p>© {new Date().getFullYear()} Igor Rodrigues {t.footer.rights}</p>
           </div>
         </div>
       </footer>

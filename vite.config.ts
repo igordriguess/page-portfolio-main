@@ -5,13 +5,17 @@ import path from 'node:path'
 
 const PORT = 8443
 
-// Vite config — https://vitejs.dev/config/
 export default defineConfig({
+  base: '/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       '@': path.resolve(import.meta.dirname, './src'),
     },
+  },
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
   },
   server: {
     host: true,

@@ -1,8 +1,8 @@
-import { Fragment, useEffect, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import { flushSync } from "react-dom";
 import resumePtUrl from "./imports/Igor Rodrigues.pdf?url";
 import resumeEnUrl from "./imports/Igor Rodrigues - EN.pdf?url";
-import { dictionaries, type Language } from "./i18n";
+import { dictionaries, type Dictionary, type Language, type Project } from "./i18n";
 
 const EMAIL = "igorvprodrigues@gmail.com";
 const WHATSAPP_NUMBER = "5516991584347";
@@ -115,6 +115,7 @@ function App() {
   const [scrolled, setScrolled] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const [openProject, setOpenProject] = useState<number | null>(null);
   const t = dictionaries[language];
   const resume = resumes[language];
 
@@ -156,7 +157,7 @@ function App() {
   // Close the mobile menu on Escape or when the viewport grows to desktop
   useEffect(() => {
     if (!menuOpen) return;
-    const desktop = window.matchMedia("(min-width: 1024px)");
+    const desktop = window.matchMedia("(min-width: 1280px)");
     const close = () => setMenuOpen(false);
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") close();
@@ -199,6 +200,7 @@ function App() {
   };
 
   const navLinks = [
+    [t.nav.projects, "#projetos"],
     [t.nav.expertise, "#especialidades"],
     [t.nav.experience, "#experiencia"],
     [t.nav.certifications, "#certificacoes"],
@@ -213,9 +215,9 @@ function App() {
         <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-4 px-5 md:px-8">
           <a href="#inicio" onClick={() => setMenuOpen(false)} className="flex shrink-0 items-center gap-3 font-semibold tracking-tight" aria-label={t.nav.home}>
             <span className="grid h-9 w-9 place-items-center rounded-full bg-[#c9ff59] font-mono text-sm font-bold text-[#102725]">IR</span>
-            <span className="hidden sm:block">Igor Rodrigues |</span>
+            <span className="hidden sm:block">Igor Rodrigues</span>
           </a>
-          <nav className="hidden items-center gap-6 text-sm lg:flex xl:gap-8" aria-label={t.nav.mainLabel}>
+          <nav className="hidden items-center gap-6 text-sm xl:flex 2xl:gap-8" aria-label={t.nav.mainLabel}>
             {navLinks.map(([label, href]) => (
               <a
                 key={href}
@@ -235,13 +237,13 @@ function App() {
             <a href="#contato" className="hidden rounded-full bg-[#c9ff59] px-5 py-2.5 text-sm font-semibold text-[#102725] transition hover:bg-white md:block">
               {t.talkToMe}
             </a>
-            <button type="button" className="grid h-10 w-10 place-items-center rounded-full border border-white/20 transition hover:border-white/50 lg:hidden" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? t.nav.closeMenu : t.nav.openMenu} aria-expanded={menuOpen} aria-controls="mobile-menu">
+            <button type="button" className="grid h-10 w-10 place-items-center rounded-full border border-white/20 transition hover:border-white/50 xl:hidden" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? t.nav.closeMenu : t.nav.openMenu} aria-expanded={menuOpen} aria-controls="mobile-menu">
               <Icon name={menuOpen ? "x" : "menu"} />
             </button>
           </div>
         </div>
         {menuOpen && (
-          <nav id="mobile-menu" className="max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-white/10 bg-[#102725] px-5 pb-6 pt-2 md:px-8 lg:hidden" aria-label={t.nav.mainLabel}>
+          <nav id="mobile-menu" className="max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-white/10 bg-[#102725] px-5 pb-6 pt-2 md:px-8 xl:hidden" aria-label={t.nav.mainLabel}>
             {[...navLinks, [t.nav.contact, "#contato"]].map(([label, href]) => (
               <a key={href} href={href} onClick={() => setMenuOpen(false)} aria-current={activeSection === href ? "location" : undefined} className={`flex items-center justify-between border-b border-white/10 py-4 text-base transition ${activeSection === href ? "text-[#c9ff59]" : "text-white/80 hover:text-white"}`}>
                 {label}
@@ -259,7 +261,7 @@ function App() {
           </nav>
         )}
       </header>
-      {menuOpen && <div className="fixed inset-0 z-40 bg-[#07100f]/50 lg:hidden" onClick={() => setMenuOpen(false)} aria-hidden="true" />}
+      {menuOpen && <div className="fixed inset-0 z-40 bg-[#07100f]/50 xl:hidden" onClick={() => setMenuOpen(false)} aria-hidden="true" />}
 
       <main>
         <section id="inicio" className="relative bg-[#102725] px-5 pb-16 pt-32 text-white md:px-8 md:pb-24 md:pt-44">
@@ -277,7 +279,7 @@ function App() {
               </h1>
               <div className="mt-9 grid gap-8 md:grid-cols-[1fr_auto] md:items-end">
                 <p className="max-w-2xl text-base leading-relaxed text-white/65 sm:text-lg md:text-xl">{t.hero.description}</p>
-                <a href="#especialidades" className="group flex w-fit items-center gap-3 text-sm font-semibold">
+                <a href="#projetos" className="group flex w-fit items-center gap-3 text-sm font-semibold">
                   {t.hero.cta}
                   <span className="grid h-11 w-11 place-items-center rounded-full border border-white/20 transition group-hover:border-[#c9ff59] group-hover:bg-[#c9ff59] group-hover:text-[#102725]">
                     <Icon name="arrow" className="h-5 w-5" />
@@ -310,6 +312,27 @@ function App() {
             <MarqueeRows items={t.marquee} rows={[[0, 1], [2], [3, 4]]} className="md:hidden" />
             <MarqueeRows items={t.marquee} rows={[[0, 1, 2], [3, 4]]} className="hidden md:grid lg:hidden" />
             <MarqueeRows items={t.marquee} rows={[[0, 1, 2, 3, 4]]} className="hidden lg:grid" />
+          </div>
+        </section>
+
+        <section id="projetos" className="relative scroll-mt-18 overflow-hidden bg-[#102725] px-5 py-20 text-white md:px-8 md:py-32">
+          <div className="hero-grid absolute inset-0 opacity-20" />
+          <div className="relative mx-auto max-w-7xl">
+            <SectionHeading light eyebrow={t.projects.eyebrow} title={t.projects.title} description={t.projects.description} />
+            <div className="mt-10 grid gap-4 md:mt-14 lg:grid-cols-2">
+              {t.projects.items.map((project, index) => (
+                <ProjectCard
+                  key={project.title}
+                  project={project}
+                  index={index}
+                  featured={index === 0}
+                  featuredLabel={t.projects.featured}
+                  viewDetails={t.projects.viewDetails}
+                  diagram={t.projects.diagram}
+                  onOpen={() => setOpenProject(index)}
+                />
+              ))}
+            </div>
           </div>
         </section>
 
@@ -507,6 +530,17 @@ function App() {
         </div>
       </footer>
 
+      {openProject !== null && (
+        <ProjectModal
+          project={t.projects.items[openProject]}
+          index={openProject}
+          copy={t.projects}
+          talkToMe={t.talkToMe}
+          showDiagram={openProject === 0}
+          onClose={() => setOpenProject(null)}
+        />
+      )}
+
       <button
         type="button"
         onClick={scrollToTop}
@@ -518,6 +552,393 @@ function App() {
       >
         <Icon name="arrowUp" className="h-5 w-5" />
       </button>
+    </div>
+  );
+}
+
+type ProjectsCopy = Dictionary["projects"];
+type DiagramCopy = ProjectsCopy["diagram"];
+
+function ProjectCard({
+  project,
+  index,
+  featured,
+  featuredLabel,
+  viewDetails,
+  diagram,
+  onOpen,
+}: {
+  project: Project;
+  index: number;
+  featured: boolean;
+  featuredLabel: string;
+  viewDetails: string;
+  diagram: DiagramCopy;
+  onOpen: () => void;
+}) {
+  const visibleTags = project.tags.slice(0, featured ? 8 : 4);
+  const hiddenTags = project.tags.length - visibleTags.length;
+
+  return (
+    <article
+      className={`group relative flex flex-col rounded-3xl border p-6 transition duration-300 hover:-translate-y-1 sm:p-8 ${
+        featured
+          ? "border-[#c9ff59]/35 bg-linear-to-br from-[#c9ff59]/12 via-white/4 to-transparent hover:border-[#c9ff59]/70 lg:col-span-2 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-10 lg:p-10"
+          : "border-white/10 bg-white/3.5 hover:border-white/30 hover:bg-white/6"
+      }`}
+    >
+      <div className="flex flex-col">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="font-mono text-xs text-white/35">{String(index + 1).padStart(2, "0")}</span>
+          <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#40d9cd]">{project.category}</span>
+          {featured && <span className="rounded-full bg-[#c9ff59] px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-wider text-[#102725]">{featuredLabel}</span>}
+        </div>
+        <h3 className={`mt-5 font-semibold leading-tight tracking-[-0.03em] ${featured ? "text-2xl sm:text-3xl lg:text-4xl" : "text-2xl"}`}>{project.title}</h3>
+        <p className="mt-4 leading-relaxed text-white/60">{project.summary}</p>
+
+        <dl className={`mt-7 grid gap-4 border-t border-white/10 pt-6 ${featured ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-2 sm:grid-cols-3"}`}>
+          {project.highlights.map((highlight) => (
+            <div key={highlight.label}>
+              <dt className="sr-only">{highlight.label}</dt>
+              <dd>
+                <span className="block text-xl font-semibold tracking-tight text-[#c9ff59] sm:text-2xl">{highlight.value}</span>
+                <span className="mt-1 block text-[11px] leading-snug text-white/45">{highlight.label}</span>
+              </dd>
+            </div>
+          ))}
+        </dl>
+
+        <div className="mt-6 flex flex-wrap gap-2">
+          {visibleTags.map((tag) => <span key={tag} className="rounded-full border border-white/12 px-3 py-1.5 font-mono text-[11px] text-white/70">{tag}</span>)}
+          {hiddenTags > 0 && <span className="rounded-full border border-white/12 px-3 py-1.5 font-mono text-[11px] text-white/45">+{hiddenTags}</span>}
+        </div>
+
+        <div className="mt-auto pt-8">
+          {/* The ::after overlay stretches the button over the whole card, so the card is one click target */}
+          <button
+            type="button"
+            onClick={onOpen}
+            aria-haspopup="dialog"
+            className="inline-flex items-center gap-3 text-sm font-semibold after:absolute after:inset-0 after:rounded-3xl after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-[#c9ff59]"
+          >
+            {viewDetails}
+            <span className="grid h-10 w-10 place-items-center rounded-full border border-white/20 transition group-hover:border-[#c9ff59] group-hover:bg-[#c9ff59] group-hover:text-[#102725]">
+              <Icon name="arrow" className="h-4 w-4" />
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {featured && <DiagramPreview diagram={diagram} />}
+    </article>
+  );
+}
+
+// Miniature of the architecture for the featured card; the full diagram lives in the modal
+function DiagramPreview({ diagram }: { diagram: DiagramCopy }) {
+  const zone = "rounded-2xl border px-4 py-3";
+  const label = "font-mono text-[10px] uppercase tracking-[0.16em]";
+  return (
+    <div aria-hidden="true" className="mt-8 hidden flex-col justify-center gap-2 sm:flex lg:mt-0">
+      <div className={`${zone} border-dashed border-white/20`}>
+        <p className={`${label} text-white/45`}>{diagram.onPrem}</p>
+      </div>
+      <PreviewLink labels={diagram.links} />
+      <div className={`${zone} border-[#40d9cd]/40 bg-[#40d9cd]/8`}>
+        <p className={`${label} text-[#40d9cd]`}>{diagram.primary}</p>
+        <div className="mt-3 grid grid-cols-3 gap-2 text-[11px] text-white/70">
+          {[diagram.edge, diagram.app, diagram.data].map((tier) => <span key={tier} className="rounded-lg bg-white/6 px-2 py-2 text-center leading-tight">{tier}</span>)}
+        </div>
+      </div>
+      <PreviewLink labels={diagram.replication} />
+      <div className={`${zone} border-[#c9ff59]/35 bg-[#c9ff59]/8`}>
+        <p className={`${label} text-[#c9ff59]`}>{diagram.dr}</p>
+      </div>
+    </div>
+  );
+}
+
+function PreviewLink({ labels }: { labels: string[] }) {
+  return (
+    <div className="flex items-center gap-3 pl-6">
+      <span className="h-6 w-px bg-white/25" />
+      <span className="truncate font-mono text-[10px] text-white/40">{labels.join(" · ")}</span>
+    </div>
+  );
+}
+
+function ProjectModal({
+  project,
+  index,
+  copy,
+  talkToMe,
+  showDiagram,
+  onClose,
+}: {
+  project: Project;
+  index: number;
+  copy: ProjectsCopy;
+  talkToMe: string;
+  showDiagram: boolean;
+  onClose: () => void;
+}) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const { labels } = copy;
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    // Guarded because StrictMode runs this effect twice in development
+    if (!dialog.open) dialog.showModal();
+    const root = document.documentElement;
+    const previousOverflow = root.style.overflow;
+    root.style.overflow = "hidden";
+    return () => {
+      root.style.overflow = previousOverflow;
+    };
+  }, []);
+
+  const close = () => dialogRef.current?.close();
+
+  return (
+    <dialog
+      ref={dialogRef}
+      className="project-modal"
+      aria-labelledby="project-modal-title"
+      onClose={onClose}
+      onClick={(event) => {
+        // A click on the dialog element itself (not its content) is a click on the backdrop
+        if (event.target === event.currentTarget) close();
+      }}
+    >
+      <header className="flex shrink-0 items-start justify-between gap-4 bg-[#102725] px-5 py-5 text-white sm:px-8 sm:py-6">
+        <div className="min-w-0">
+          <p className="flex flex-wrap items-center gap-3 font-mono text-[11px] uppercase tracking-[0.16em]">
+            <span className="text-white/40">{String(index + 1).padStart(2, "0")}</span>
+            <span className="text-[#40d9cd]">{project.category}</span>
+          </p>
+          <h2 id="project-modal-title" className="mt-3 text-2xl font-semibold leading-tight tracking-[-0.03em] sm:text-3xl">{project.title}</h2>
+        </div>
+        <button type="button" onClick={close} aria-label={copy.close} title={copy.close} className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/20 transition hover:border-[#c9ff59] hover:text-[#c9ff59]">
+          <Icon name="x" />
+        </button>
+      </header>
+
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <div className="grid gap-10 px-5 py-8 sm:px-8 sm:py-10">
+          <p className="max-w-3xl text-lg leading-relaxed text-[#132625]/75">{project.summary}</p>
+
+          <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-[#132625]/10 bg-[#132625]/10 sm:grid-cols-4" aria-label={labels.highlights}>
+            {project.highlights.map((highlight) => (
+              <div key={highlight.label} className="bg-white p-4 sm:p-5">
+                <dt className="sr-only">{highlight.label}</dt>
+                <dd>
+                  <span className="block text-2xl font-semibold tracking-tight text-[#0c746e]">{highlight.value}</span>
+                  <span className="mt-1 block text-xs leading-snug text-[#132625]/55">{highlight.label}</span>
+                </dd>
+              </div>
+            ))}
+          </dl>
+
+          <ModalSection title={labels.gains}>
+            <ul className="grid gap-3 sm:grid-cols-2">
+              {project.gains.map((gain) => (
+                <li key={gain.title} className="flex gap-4 rounded-2xl border border-[#132625]/10 bg-white p-5">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#c9ff59] text-[#102725]"><Icon name="check" className="h-4 w-4" /></span>
+                  <div>
+                    <p className="font-semibold">{gain.title}</p>
+                    <p className="mt-1 text-sm leading-relaxed text-[#132625]/60">{gain.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </ModalSection>
+
+          <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+            <ModalSection title={labels.context}>
+              <p className="leading-relaxed text-[#132625]/65">{project.context}</p>
+            </ModalSection>
+            <ModalSection title={labels.solution}>
+              <ul className="grid gap-3">
+                {project.solution.map((item) => (
+                  <li key={item} className="flex gap-3 leading-relaxed text-[#132625]/70">
+                    <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#0c746e]" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </ModalSection>
+          </div>
+
+          {showDiagram && (
+            <ModalSection title={labels.architecture}>
+              <ArchitectureDiagram diagram={copy.diagram} />
+            </ModalSection>
+          )}
+
+          {project.flow && (
+            <ModalSection title={project.flow.label}>
+              <ol className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+                {project.flow.steps.map((step, stepIndex) => (
+                  <li key={step} className="flex items-center gap-2">
+                    {stepIndex > 0 && <Icon name="arrow" className="h-4 w-4 shrink-0 rotate-90 text-[#132625]/30 sm:rotate-0" />}
+                    <span className="flex items-center gap-3 rounded-full border border-[#132625]/12 bg-white py-2 pl-2 pr-4 text-sm font-medium">
+                      <span className="grid h-6 w-6 place-items-center rounded-full bg-[#102725] font-mono text-[10px] text-[#c9ff59]">{stepIndex + 1}</span>
+                      {step}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </ModalSection>
+          )}
+
+          {project.beforeAfter && (
+            <ModalSection title={labels.beforeAfter}>
+              <div className="grid gap-3">
+                {project.beforeAfter.map((row) => (
+                  <div key={row.after} className="grid overflow-hidden rounded-2xl border border-[#132625]/10 sm:grid-cols-2">
+                    <div className="bg-white p-4 sm:p-5">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#132625]/40">{labels.before}</p>
+                      <p className="mt-2 text-sm leading-relaxed text-[#132625]/60">{row.before}</p>
+                    </div>
+                    <div className="bg-[#102725] p-4 text-white sm:p-5">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#c9ff59]">{labels.after}</p>
+                      <p className="mt-2 flex gap-2 text-sm leading-relaxed">
+                        <Icon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-[#c9ff59]" />
+                        {row.after}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ModalSection>
+          )}
+
+          <ModalSection title={labels.technologies}>
+            <div className="flex flex-wrap gap-2">
+              {project.tags.map((tag) => <span key={tag} className="rounded-full border border-[#132625]/12 bg-white px-3 py-1.5 font-mono text-[11px]">{tag}</span>)}
+            </div>
+          </ModalSection>
+
+          <div className="flex flex-col gap-4 rounded-2xl bg-[#40d9cd] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+            <p className="text-lg font-semibold tracking-tight">{labels.cta}</p>
+            <a href="#contato" onClick={close} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-[#102725] px-5 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-[#102725]">
+              {talkToMe} <Icon name="arrow" className="h-4 w-4" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  );
+}
+
+function ModalSection({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section>
+      <h3 className="section-label">{title}</h3>
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+
+// Laid out with HTML instead of a fixed-size image so it reflows to a single column on phones
+function ArchitectureDiagram({ diagram }: { diagram: DiagramCopy }) {
+  return (
+    <figure>
+      <div className="rounded-2xl border border-dashed border-[#132625]/25 bg-white p-4 sm:p-5">
+        <ZoneTitle>{diagram.onPrem}</ZoneTitle>
+        <ChipRow items={diagram.onPremItems} />
+      </div>
+
+      <DiagramLink labels={diagram.links} />
+
+      <div className="rounded-2xl border border-[#0c746e]/30 bg-[#dff4ee]/60 p-4 sm:p-5">
+        <ZoneTitle accent>{diagram.primary}</ZoneTitle>
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <Tier title={diagram.edge} className="md:col-span-2">
+            <ol className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              {diagram.edgeItems.map((item, itemIndex) => (
+                <li key={item} className="flex items-center gap-2 sm:flex-1">
+                  {itemIndex > 0 && <Icon name="arrow" className="h-4 w-4 shrink-0 rotate-90 text-[#0c746e]/50 sm:rotate-0" />}
+                  <Chip className="sm:flex-1">{item}</Chip>
+                </li>
+              ))}
+            </ol>
+          </Tier>
+          <Tier title={diagram.app}><ChipRow items={diagram.appItems} /></Tier>
+          <Tier title={diagram.ops}><ChipRow items={diagram.opsItems} /></Tier>
+          <Tier title={diagram.data} className="md:col-span-2">
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              {diagram.dataItems.map((item) => (
+                <Chip key={item} icon="database">{item}</Chip>
+              ))}
+            </div>
+          </Tier>
+        </div>
+      </div>
+
+      <DiagramLink labels={diagram.replication} accent />
+
+      <div className="rounded-2xl border border-[#132625]/15 bg-[#e7ebe5] p-4 sm:p-5">
+        <ZoneTitle>{diagram.dr}</ZoneTitle>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          {diagram.drItems.map((item) => <Chip key={item}>{item}</Chip>)}
+        </div>
+        <p className="mt-4 flex items-start gap-2 text-sm font-medium text-[#0c746e]">
+          <Icon name="shield" className="mt-0.5 h-4 w-4 shrink-0" />
+          {diagram.fsdr}
+        </p>
+      </div>
+
+      <figcaption className="mt-4 text-xs leading-relaxed text-[#132625]/45">{diagram.caption}</figcaption>
+    </figure>
+  );
+}
+
+function ZoneTitle({ children, accent = false }: { children: ReactNode; accent?: boolean }) {
+  return <p className={`font-mono text-[11px] font-medium uppercase tracking-[0.16em] ${accent ? "text-[#0c746e]" : "text-[#132625]/55"}`}>{children}</p>;
+}
+
+function Tier({ title, className = "", children }: { title: string; className?: string; children: ReactNode }) {
+  return (
+    <div className={`rounded-xl border border-[#132625]/10 bg-white/70 p-3 sm:p-4 ${className}`}>
+      <p className="mb-3 text-xs font-semibold text-[#132625]/70">{title}</p>
+      {children}
+    </div>
+  );
+}
+
+function Chip({ children, icon, className = "" }: { children: ReactNode; icon?: IconName; className?: string }) {
+  return (
+    <span className={`flex items-center gap-2 rounded-lg border border-[#132625]/10 bg-white px-3 py-2 text-xs font-medium leading-snug ${className}`}>
+      {icon && <Icon name={icon} className="h-3.5 w-3.5 shrink-0 text-[#0c746e]" />}
+      {children}
+    </span>
+  );
+}
+
+function ChipRow({ items }: { items: string[] }) {
+  return (
+    <div className="mt-3 flex flex-wrap gap-2 first:mt-0">
+      {items.map((item) => <Chip key={item}>{item}</Chip>)}
+    </div>
+  );
+}
+
+function DiagramLink({ labels, accent = false }: { labels: string[]; accent?: boolean }) {
+  return (
+    <div className="flex items-stretch gap-4 py-2 pl-6 sm:pl-10">
+      <div className="flex flex-col items-center">
+        <span className={`w-px flex-1 ${accent ? "bg-[#0c746e]/40" : "bg-[#132625]/25"}`} />
+        <Icon name="arrowUp" className={`h-4 w-4 rotate-180 ${accent ? "text-[#0c746e]" : "text-[#132625]/40"}`} />
+      </div>
+      <div className="flex flex-wrap items-center gap-2 py-2">
+        {labels.map((label) => (
+          <span key={label} className={`rounded-full px-3 py-1.5 font-mono text-[10px] font-medium uppercase tracking-wider ${accent ? "bg-[#102725] text-[#c9ff59]" : "bg-[#132625]/8 text-[#132625]/65"}`}>
+            {label}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }

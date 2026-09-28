@@ -95,6 +95,64 @@ h3 {
   }
 }
 
+/* Project details modal (native <dialog>): centered card on desktop, full screen on phones */
+.project-modal {
+  width: min(64rem, calc(100vw - 2rem));
+  max-width: none;
+  height: auto;
+  max-height: calc(100dvh - 2rem);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 1.5rem;
+  background: #f5f6f2;
+  color: #132625;
+  overflow: hidden;
+  box-shadow: 0 40px 90px -30px rgba(7, 16, 15, 0.7);
+}
+
+.project-modal[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.project-modal::backdrop {
+  background: rgba(7, 16, 15, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+@media (max-width: 639px) {
+  .project-modal {
+    width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .project-modal[open] {
+    animation: modal-in 240ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .project-modal[open]::backdrop {
+    animation: backdrop-in 240ms ease-out;
+  }
+
+  @keyframes modal-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.98);
+    }
+  }
+
+  @keyframes backdrop-in {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
 /* Language switch: quick cross-fade of the page while the toggle thumb slides */
 ::view-transition-old(root),
 ::view-transition-new(root) {

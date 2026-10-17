@@ -259,7 +259,7 @@ function App() {
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-space-950 text-ink">
-      <div aria-hidden="true" className="page-glow pointer-events-none absolute inset-x-0 top-0 h-[40rem]" />
+      <div aria-hidden="true" className="page-glow pointer-events-none absolute inset-x-0 top-0 h-160" />
 
       <header className={`fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color] duration-300 ${scrolled || menuOpen ? "hairline bg-space-950/85 backdrop-blur-lg" : "border-transparent bg-transparent"}`}>
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 md:px-8">
